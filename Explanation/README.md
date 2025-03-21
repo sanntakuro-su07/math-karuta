@@ -348,58 +348,85 @@ const startGame = useCallback(() => {
 このプロジェクトではReactを使用しており、JSXを通じてUIが構築されています：
 
 ```tsx
+import React, { useState } from 'react';
+import { VolumeX, Volume2 } from 'react-icons/fa'; // VolumeX と Volume2のアイコンをインポート
+
 // src/App.tsx (UIのレンダリング部分)
-return (
-  <div className="min-h-screen bg-white">
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Mamelon' }}>数学かるた</h1>
-        <p className="text-xl mb-4" style={{ fontFamily: 'Mamelon' }}>Mathematical Karuta</p>
-        
-        {/* 音声切替ボタン */}
-        <button
-          onClick={() => setMuted(!muted)}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-        >
-          {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-        </button>
+const App = () => {
+  const [muted, setMuted] = useState(false);
+  const [showSelectScreen, setShowSelectScreen] = useState(true);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [difficulty, setDifficulty] = useState('easy');
+  const [score, setScore] = useState(0);
+  const [currentProblem, setCurrentProblem] = useState('1 + 1');
+  const [cards, setCards] = useState([
+    { title: '加法', formula: '1 + 1' },
+    { title: '乗法', formula: '2 × 3' },
+    // 他のカードデータを追加できます
+  ]);
 
-        {/* 難易度選択画面 */}
-        {showSelectScreen && (
-          <div className="max-w-md mx-auto bg-gray-50 p-8 rounded-lg shadow-lg">
-            {/* 難易度ボタン */}
-          </div>
-        )}
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Mamelon' }}>数学かるた</h1>
+          <p className="text-xl mb-4" style={{ fontFamily: 'Mamelon' }}>Mathematical Karuta</p>
+          
+          {/* 音声切替ボタン */}
+          <button
+            onClick={() => setMuted(!muted)}
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
+          >
+            {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+          </button>
 
-        {/* ゲームプレイ画面 */}
-        {gameStarted && (
-          <>
-            <div className="bg-gray-50 rounded-lg p-6 mb-8 shadow-lg">
-              {/* 問題表示と情報 */}
+          {/* 難易度選択画面 */}
+          {showSelectScreen && (
+            <div className="max-w-md mx-auto bg-gray-50 p-8 rounded-lg shadow-lg">
+              <button onClick={() => setDifficulty('easy')} className="btn btn-primary">Easy</button>
+              <button onClick={() => setDifficulty('medium')} className="btn btn-primary">Medium</button>
+              <button onClick={() => setDifficulty('hard')} className="btn btn-primary">Hard</button>
             </div>
-            
-            <div className="flex justify-center space-x-8 mb-4">
-              {/* スコア表示 */}
+          )}
+
+          {/* ゲームプレイ画面 */}
+          {gameStarted && (
+            <>
+              <div className="bg-gray-50 rounded-lg p-6 mb-8 shadow-lg">
+                <h2 className="text-2xl font-bold">{currentProblem}</h2>
+              </div>
+              
+              <div className="flex justify-center space-x-8 mb-4">
+                <div className="text-xl">Score: {score}</div>
+              </div>
+            </>
+          )}
+
+          {/* 結果画面 */}
+          {gameEnded && (
+            <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center">
+              {/* 結果表示 */}
             </div>
-          </>
-        )}
+          )}
+        </div>
 
-        {/* 結果画面 */}
-        {gameEnded && (
-          <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center">
-            {/* 結果表示 */}
-          </div>
-        )}
-      </div>
-
-      {/* 数学公式カード表示エリア */}
-      <div className="grid grid-cols-5 gap-4 max-w-6xl mx-auto">
-        {/* カード表示のマッピング */}
+        {/* 数学公式カード表示エリア */}
+        <div className="grid grid-cols-5 gap-4 max-w-6xl mx-auto">
+          {cards.map((card, index) => (
+            <div key={index} className="p-4 bg-white shadow-md rounded-lg hover:scale-110 transition-transform duration-300 ease-in-out">
+              <h2 className="text-xl font-bold">{card.title}</h2>
+              <p>{card.formula}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
-```
+  );
+};
+
+export default App;
+
 
 Reactの条件付きレンダリング（`{条件 && <コンポーネント/>}`）を使用して、ゲームの状態に応じて異なる画面を表示しています。
 
